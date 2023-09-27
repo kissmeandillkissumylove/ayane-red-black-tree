@@ -48,6 +48,19 @@ class RBTree:
 		self._root: Union[Node, Nil] = self.__nil
 		self._lenght: int = 0
 
+	def search(self, data: Union[int, float, str]) -> Union[Node, None]:
+		"""find element in the tree"""
+		node = self._root
+		while node != self.__nil:
+			if data == node.data:
+				return node # found node
+			elif data > node.data:
+				node = node.right
+			elif data < node.data:
+				node = node.left
+		else:
+			return # None if no node in the tree
+
 	def insert(self, data: Union[int, float, str]) -> None:
 		"""insert new node in the tree:
 		data: any value that we can compare"""
@@ -74,9 +87,9 @@ class RBTree:
 				else: # if such a node already exists in the tree
 					self._lenght -= 1 # decrease lenght
 					return # exit the insert()
-		self.fix(new_node) # fix the tree after new node inserting
+		self.__fix(new_node) # fix the tree after new node inserting
 
-	def fix(self, node: Node) -> NoReturn:
+	def __fix(self, node: Node) -> NoReturn:
 		"""fix the tree after inserting"""
 		while node != self._root and node.prev.red:
 			# be sure to check which side the uncle is on and look at his color.
@@ -91,10 +104,10 @@ class RBTree:
 				else: # uncle is black
 					if node == node.prev.left: # check node's position from parent
 						node = node.prev
-						self.rotate_right(node) # need right rotate if node in left side
+						self.__rotate_right(node) # need right rotate if node in left side
 					node.prev.red = False # if node already in left side set black for parent
 					node.prev.prev.red = True # red for parent's parent
-					self.rotate_left(node.prev.prev) # left rotate parent's parent
+					self.__rotate_left(node.prev.prev) # left rotate parent's parent
 			else: # uncle on the right side
 				if node.prev.prev.right.red: # check uncle's color
 					node.prev.prev.right.red = False # set black for uncle
@@ -104,13 +117,13 @@ class RBTree:
 				else: # uncle is not communist
 					if node == node.prev.right: # сheck node's position
 						node = node.prev
-						self.rotate_left(node) #rotate parent to left side
+						self.__rotate_left(node) #rotate parent to left side
 					node.prev.red = False # set parent black
 					node.prev.prev.red = True # set parent's parent red
-					self.rotate_right(node.prev.prev) # right rotate for parent's parent
+					self.__rotate_right(node.prev.prev) # right rotate for parent's parent
 		self._root.red = False # paint the root black
 
-	def rotate_right(self, nodeX: Node) -> NoReturn:
+	def __rotate_right(self, nodeX: Node) -> NoReturn:
 		"""rotate the tree to the right relative to the incoming node.
 		we pull the node to the right."""
 		nodeY = nodeX.left # save Y is X left child
@@ -130,7 +143,7 @@ class RBTree:
 		nodeY.right = nodeX # set Y' right child is X
 		nodeX.prev = nodeY # set new parent for X is Y
 
-	def rotate_left(self, nodeX: Node) -> NoReturn:
+	def __rotate_left(self, nodeX: Node) -> NoReturn:
 		"""rotate the tree to the left relative to the incoming node.
 		we pull the node to the left."""
 		# check left_rotate() comments for info what is happening
@@ -150,6 +163,10 @@ class RBTree:
 
 		nodeY.left = nodeX
 		nodeX.prev = nodeY
+
+	def delete(self, data: Union[int, float, str]) -> NoReturn:
+		"""delete node from tree"""
+		
 
 	def out(self, root: Node) -> NoReturn:
 		"""display the tree in the terminal. this is not the best solution in terms of
@@ -187,17 +204,17 @@ class RBTree:
 					nodes.append("S")
 			height //= 2
 
-	def out1(self, node: Node) -> NoReturn:
+	def out_simple(self, node: Node) -> NoReturn:
 		"""another solution for fast tree output. the color of black elements is colored blue
 		for clarity in terminals where the background is black."""
 		if node:
 			if node.red:
-				print("\033[91m" + str(node.data) + "\033[0m", end=", ")
+				print("\033[91m" + str(node.data) + "\033[0m", end=" ")
 			else:
-				print(("\033[96m" + str(node.data) + "\033[0m,")
-				      if node.data != None else "\033[96mN\033[0m,", end=" ")
-			self.out1(node.left)
-			self.out1(node.right)
+				if node.data != None:
+					print("\033[96m" + str(node.data) + "\033[0m", end=" ")
+			self.out_simple(node.left)
+			self.out_simple(node.right)
 
 	def get_lenght(self) -> int:
 		"""returns red-black tree lenght"""
@@ -214,8 +231,9 @@ def main():
 	for elt in add:
 		tree.insert(elt)
 	tree.out(tree.get_root())
-	tree.out1(tree.get_root())
+	tree.out_simple(tree.get_root())
 	print("\nlenght =", tree.get_lenght())
+	print(tree.search(1), tree.search(4), tree.search(66))
 
 if __name__ == "__main__":
 	main()
