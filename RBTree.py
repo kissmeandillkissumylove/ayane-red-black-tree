@@ -164,9 +164,76 @@ class RBTree:
 		nodeY.left = nodeX
 		nodeX.prev = nodeY
 
-	def delete(self, data: Union[int, float, str]) -> NoReturn:
+	def delete(self, data: Union[int, float, str]) -> None:
 		"""delete node from tree"""
-		
+		self._lenght -= 1  # decrease lenght
+		node = self.search(data)
+		if node != None:  # if node is exist
+			if node.red:  # check is node red or black
+				if node.left == node.right: # if both childs are Nils
+					if node.prev.right == node:
+						node.prev.right = self.__nil
+						return
+					else:
+						node.prev.left = self.__nil
+						return
+				else:
+					nodeL, nodeR = node.left, node.right
+					while nodeL.right != self.__nil and nodeR.left != self.__nil:
+						if nodeL.right != self.__nil:
+							nodeL = nodeL.right
+						if nodeR.left != self.__nil:
+							nodeR = nodeR.left
+					if nodeL.red:
+						node.data = nodeL.data
+						nodeL.prev.right = self.__nil
+						return
+					elif nodeR.red:
+						node.data = nodeR.data
+						nodeR.prev.left = self.__nil
+						return
+					else: #both nodes are black
+						if nodeL.left != self.__nil:
+							node.data = nodeL.data
+							nodeL.data = nodeL.left.data
+							nodeL.left = self.__nil
+							return
+						elif nodeR.right != self.__nil:
+							node.data = nodeR.data
+							nodeR.data = nodeR.right.data
+							nodeR.right = self.__nil
+							return
+						else: # both black nodes have no childs
+							node.data = nodeL.data
+							if nodeL.prev.left != nodeL:
+								if nodeL.prev.left.red:
+									self.__rotate_right(nodeL.prev)
+									nodeL.prev.prev.red = False
+									nodeL.prev.left.red = True
+									nodeL.prev.right = self.__nil
+									self.__rotate_left(node)
+									return
+								else:
+									nodeL.prev.left.red = True
+									nodeL.prev.right = self.__nil
+									self.__rotate_left(node)
+									return
+							else:
+								nodeL.prev.red = False
+								nodeL.prev.right.red = True
+								nodeL.prev.left = self.__nil
+								return
+			else:  # node is black
+				if node.left == node.right:
+					raise ValueError
+				elif node.left == self.__nil:
+					raise ValueError
+				elif node.right == self.__nil:
+					raise ValueError
+				elif node.left != self.__nil and node.right != self.__nil:
+					raise ValueError
+		else:
+			self._lenght += 1
 
 	def out(self, root: Node) -> NoReturn:
 		"""display the tree in the terminal. this is not the best solution in terms of
@@ -180,13 +247,13 @@ class RBTree:
 			for node in nodes:
 				if node:
 					if node == "S":
-						print(" ", end="")
+						print(" ", end=" ")
 					else:
 						print(" " * height, ((("\033[91m" + str(
 									node.data) + "\033[0m") if node.red == True else (
 										"\033[96m" + str(
 									node.data) + "\033[0m")) if node.data is not None else (
-									"\033[96mN\033[0m")), end=" " * height)
+									"")), end=" " * height)
 			print("\n")
 			for elt in range(0, len(nodes)):
 				node = nodes.pop(0)
@@ -227,13 +294,37 @@ class RBTree:
 def main():
 	"""main function"""
 	tree = RBTree()
-	add = [20, 12, 15, 8, 23, 45, 24, 61, 32, 4, 1, 0, 43, 38, 9, 7, 18, 99, 69, 4, 1, 24]
+	add = [elt for elt in range(0, 15)]
 	for elt in add:
 		tree.insert(elt)
 	tree.out(tree.get_root())
 	tree.out_simple(tree.get_root())
 	print("\nlenght =", tree.get_lenght())
 	print(tree.search(1), tree.search(4), tree.search(66))
+	tree.delete(12)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
+	tree.delete(14)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
+	tree.delete(7)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
+	tree.delete(6)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
+	tree.delete(5)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
+	tree.delete(11)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
+	tree.delete(8)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
+	tree.delete(13)
+	tree.out(tree.get_root())
+	print("\nlenght =", tree.get_lenght())
 
 if __name__ == "__main__":
 	main()
