@@ -315,26 +315,7 @@ class RBTree:
 
 def main():
 	"""main function"""
-	tree = RBTree()
-	tree.insert(20)
-	tree.insert(12)
-	tree.insert(15)
-	tree.insert(8)
-	tree.insert(23)
-	tree.insert(45)
-	tree.insert(24)
-	tree.insert(61)
-	tree.insert(32)
-	tree.insert(4)
-	tree.insert(0)
-	tree.insert(43)
-	tree.insert(38)
-	tree.insert(9)
-	tree.insert(7)
-	tree.insert(18)
-	tree.insert(99)
-	tree.insert(69)
-	tree.out(tree.get_root())
+	pass
 
 if __name__ == "__main__":
 	main()
